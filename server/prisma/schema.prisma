@@ -1,14 +1,177 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  DOCTOR
+  PATIENT
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum BloodGroup {
+  A_POS
+  A_NEG
+  B_POS
+  B_NEG
+  AB_POS
+  AB_NEG
+  O_POS
+  O_NEG
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum Severity {
+  MILD
+  MODERATE
+  SEVERE
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctor    Doctor?
+  patient   Patient?
+}
+
+model Doctor {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name           String
+  specialization String
+  qualification  String
+  experience     Int
+  phone          String?
+  avatarUrl      String?
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  appointments   Appointment[]
+  prescriptions  Prescription[]
+}
+
+model Patient {
+  id               String     @id @default(uuid())
+  userId           String     @unique
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name             String
+  dob              DateTime
+  gender           Gender
+  bloodGroup       BloodGroup?
+  phone            String?
+  address          String?
+  avatarUrl        String?
+  emergencyContact String?
+
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  appointments     Appointment[]
+  prescriptions    Prescription[]
+  medicalHistory   MedicalHistory[]
+  vitalSigns       VitalSign[]
+}
+
+model Appointment {
+  id          String            @id @default(uuid())
+  patientId   String
+  doctorId    String
+  patient     Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor      Doctor            @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  date        DateTime
+  reason      String
+  notes       String?
+  status      AppointmentStatus @default(PENDING)
+
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  prescription Prescription?
+}
+
+model Prescription {
+  id            String      @id @default(uuid())
+  patientId     String
+  doctorId      String
+  appointmentId String      @unique
+  patient       Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor        Doctor      @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  diagnosis     String
+  notes         String?
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  medicines     Medicine[]
+}
+
+model Medicine {
+  id             String       @id @default(uuid())
+  prescriptionId String
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+
+  name           String
+  dosage         String
+  frequency      String
+  duration       String
+  instructions   String?
+
+  createdAt      DateTime     @default(now())
+}
+
+model MedicalHistory {
+  id          String    @id @default(uuid())
+  patientId   String
+  patient     Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  condition   String
+  severity    Severity
+  diagnosedAt DateTime
+  resolvedAt  DateTime?
+  notes       String?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model VitalSign {
+  id            String   @id @default(uuid())
+  patientId     String
+  patient       Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  recordedAt    DateTime @default(now())
+  bloodPressure String?
+  heartRate     Int?
+  temperature   Float?
+  weight        Float?
+  height        Float?
+  oxygenSat     Float?
+
+  createdAt     DateTime @default(now())
 }
