@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
+const authRoutes = require("./routes/auth.routes");
 
 dotenv.config();
 
@@ -26,7 +27,7 @@ app.get("/api/health", (req, res) => {
 });
 
 // ── Routes (we'll add these soon) ─────────────────
-// app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 // app.use("/api/doctors", doctorRoutes);
 // app.use("/api/patients", patientRoutes);
 // app.use("/api/appointments", appointmentRoutes);
