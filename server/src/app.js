@@ -7,6 +7,8 @@ const dotenv = require("dotenv");
 const authRoutes = require("./routes/auth.routes");
 const patientRoutes = require("./routes/patients.routes");
 const appointmentRoutes = require("./routes/appointments.routes");
+const prescriptionRoutes = require("./routes/prescriptions.routes");
+const doctorRoutes = require("./routes/doctors.routes");
 
 dotenv.config();
 
@@ -30,10 +32,10 @@ app.get("/api/health", (req, res) => {
 
 // ── Routes (we'll add these soon) ─────────────────
 app.use("/api/auth", authRoutes);
-// app.use("/api/doctors", doctorRoutes);
+app.use("/api/doctors", doctorRoutes);
 app.use("/api/patients", patientRoutes);
 app.use("/api/appointments", appointmentRoutes);
-// app.use("/api/prescriptions", prescriptionRoutes);
+app.use("/api/prescriptions", prescriptionRoutes);
 
 // ── Global Error Handler ──────────────────────────
 app.use((err, req, res, next) => {
