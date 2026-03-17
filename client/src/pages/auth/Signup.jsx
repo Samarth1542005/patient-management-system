@@ -22,7 +22,7 @@ export default function Signup() {
     setLoading(true);
     try {
       await signup({ ...formData, role });
-      navigate("/login");
+      navigate("/verify-email-pending", { state: { email: formData.email } });
     } catch (err) {
       setError(err.response?.data?.message || "Signup failed. Try again.");
     } finally {
