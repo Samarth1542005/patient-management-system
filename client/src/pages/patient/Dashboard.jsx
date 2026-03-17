@@ -189,7 +189,7 @@ export default function PatientDashboard() {
                     <p style={{ fontSize: "0.875rem", fontWeight: "600", color: "#0f172a" }}>{presc.diagnosis}</p>
                     <p style={{ fontSize: "0.7rem", color: "#94a3b8" }}>{formatDateTime(presc.createdAt)}</p>
                   </div>
-                  <p style={{ fontSize: "0.75rem", color: "#64748b" }}>Dr. {presc.doctor?.name}</p>
+                  <p style={{ fontSize: "0.75rem", color: "#64748b" }}>{presc.doctor?.name}</p>
                   <p style={{ fontSize: "0.75rem", color: "#94a3b8", marginTop: "2px" }}>
                     {presc.medicines?.length} medicine(s) prescribed
                   </p>

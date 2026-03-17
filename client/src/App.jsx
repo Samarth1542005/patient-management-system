@@ -1,3 +1,4 @@
+import Landing from "./pages/Landing";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import useAuthStore from "./store/authStore";
 
@@ -34,6 +35,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Landing */}
+        <Route path="/" element={<Landing />} />
         {/* Public routes */}
         <Route
           path="/login"
