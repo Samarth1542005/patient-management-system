@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, User } from "lucide-react";
+import { Search, Users, ArrowRight } from "lucide-react";
 import PageWrapper from "../../components/layout/PageWrapper";
 import { getAllPatients } from "../../api/patients";
 import { formatDate } from "../../lib/utils";
+
+const cardStyle = {
+  background: "white",
+  borderRadius: "16px",
+  border: "1px solid #f1f5f9",
+  boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+  overflow: "hidden",
+};
 
 export default function PatientList() {
   const navigate = useNavigate();
@@ -31,69 +39,135 @@ export default function PatientList() {
     return () => clearTimeout(delay);
   }, [search, page]);
 
+  const bloodGroupColors = {
+    "A POS": "#eff6ff", "A NEG": "#eff6ff",
+    "B POS": "#f0fdf4", "B NEG": "#f0fdf4",
+    "AB POS": "#faf5ff", "AB NEG": "#faf5ff",
+    "O POS": "#fff7ed", "O NEG": "#fff7ed",
+  };
+
   return (
-    <PageWrapper title="Patients" subtitle="Manage and view all patient records">
+    <PageWrapper title="Patients" subtitle={`${pagination.total || 0} total patients`}>
+
       {/* Search */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="relative flex-1 max-w-sm">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+      <div style={{ marginBottom: "1.5rem" }}>
+        <div style={{ position: "relative", maxWidth: "380px" }}>
+          <Search size={16} style={{
+            position: "absolute", left: "14px", top: "50%",
+            transform: "translateY(-50%)", color: "#94a3b8"
+          }} />
           <input
             type="text"
             placeholder="Search by name or phone..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            style={{
+              width: "100%", padding: "11px 14px 11px 42px",
+              border: "1.5px solid #e2e8f0", borderRadius: "12px",
+              fontSize: "0.875rem", color: "#0f172a",
+              backgroundColor: "white", outline: "none",
+              boxSizing: "border-box", fontFamily: "inherit",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.04)"
+            }}
+            onFocus={(e) => e.target.style.borderColor = "#2563eb"}
+            onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}
           />
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
-        <table className="w-full">
+      <div style={cardStyle}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-100">
-              <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Patient</th>
-              <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Gender</th>
-              <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Blood Group</th>
-              <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Phone</th>
-              <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Joined</th>
-              <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Action</th>
+            <tr style={{ background: "#f8fafc", borderBottom: "1px solid #f1f5f9" }}>
+              {["Patient", "Gender", "Blood Group", "Phone", "Joined", ""].map((h) => (
+                <th key={h} style={{
+                  textAlign: "left", padding: "12px 20px",
+                  fontSize: "0.7rem", fontWeight: "700",
+                  color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em"
+                }}>{h}</th>
+              ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-50">
+          <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center">
-                  <div className="w-6 h-6 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto" />
+                <td colSpan={6} style={{ padding: "4rem", textAlign: "center" }}>
+                  <div style={{
+                    width: "28px", height: "28px",
+                    border: "3px solid #2563eb", borderTopColor: "transparent",
+                    borderRadius: "50%", animation: "spin 0.8s linear infinite",
+                    margin: "0 auto"
+                  }} />
                 </td>
               </tr>
             ) : patients.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-slate-400 text-sm">
-                  No patients found
+                <td colSpan={6} style={{ padding: "4rem", textAlign: "center" }}>
+                  <Users size={32} color="#cbd5e1" style={{ margin: "0 auto 0.75rem" }} />
+                  <p style={{ color: "#94a3b8", fontSize: "0.875rem" }}>No patients found</p>
                 </td>
               </tr>
             ) : (
-              patients.map((patient) => (
-                <tr key={patient.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-semibold text-sm">
+              patients.map((patient, i) => (
+                <tr key={patient.id} style={{
+                  borderBottom: i < patients.length - 1 ? "1px solid #f8fafc" : "none",
+                  transition: "background 0.1s"
+                }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "#fafafa"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                >
+                  <td style={{ padding: "14px 20px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      <div style={{
+                        width: "36px", height: "36px", borderRadius: "10px",
+                        background: "#eff6ff", display: "flex", alignItems: "center",
+                        justifyContent: "center", color: "#2563eb",
+                        fontWeight: "700", fontSize: "0.875rem", flexShrink: 0
+                      }}>
                         {patient.name[0]}
                       </div>
-                      <span className="text-sm font-medium text-slate-800">{patient.name}</span>
+                      <span style={{ fontSize: "0.875rem", fontWeight: "600", color: "#0f172a" }}>
+                        {patient.name}
+                      </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-600 capitalize">{patient.gender?.toLowerCase()}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600">{patient.bloodGroup?.replace("_", " ") || "—"}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600">{patient.phone || "—"}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600">{formatDate(patient.createdAt)}</td>
-                  <td className="px-6 py-4">
+                  <td style={{ padding: "14px 20px", fontSize: "0.875rem", color: "#64748b" }}>
+                    {patient.gender?.charAt(0) + patient.gender?.slice(1).toLowerCase()}
+                  </td>
+                  <td style={{ padding: "14px 20px" }}>
+                    {patient.bloodGroup ? (
+                      <span style={{
+                        fontSize: "0.75rem", fontWeight: "700",
+                        padding: "3px 10px", borderRadius: "999px",
+                        background: "#eff6ff", color: "#2563eb"
+                      }}>
+                        {patient.bloodGroup.replace("_", " ")}
+                      </span>
+                    ) : (
+                      <span style={{ color: "#cbd5e1", fontSize: "0.875rem" }}>—</span>
+                    )}
+                  </td>
+                  <td style={{ padding: "14px 20px", fontSize: "0.875rem", color: "#64748b" }}>
+                    {patient.phone || <span style={{ color: "#cbd5e1" }}>—</span>}
+                  </td>
+                  <td style={{ padding: "14px 20px", fontSize: "0.8rem", color: "#94a3b8" }}>
+                    {formatDate(patient.createdAt)}
+                  </td>
+                  <td style={{ padding: "14px 20px" }}>
                     <button
                       onClick={() => navigate(`/doctor/patients/${patient.id}`)}
-                      className="text-sm text-primary-600 hover:underline font-medium"
+                      style={{
+                        display: "flex", alignItems: "center", gap: "4px",
+                        color: "#2563eb", fontSize: "0.8rem", fontWeight: "700",
+                        background: "none", border: "none", cursor: "pointer",
+                        fontFamily: "inherit", padding: "6px 12px",
+                        borderRadius: "8px", transition: "background 0.1s"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "#eff6ff"}
+                      onMouseLeave={(e) => e.currentTarget.style.background = "none"}
                     >
-                      View
+                      View <ArrowRight size={13} />
                     </button>
                   </td>
                 </tr>
@@ -104,25 +178,34 @@ export default function PatientList() {
 
         {/* Pagination */}
         {pagination.totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
-            <p className="text-sm text-slate-500">
+          <div style={{
+            padding: "1rem 1.5rem",
+            borderTop: "1px solid #f1f5f9",
+            display: "flex", alignItems: "center", justifyContent: "space-between"
+          }}>
+            <p style={{ fontSize: "0.8rem", color: "#94a3b8" }}>
               Showing {patients.length} of {pagination.total} patients
             </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPage(p => p - 1)}
-                disabled={page === 1}
-                className="px-3 py-1.5 text-sm border border-slate-200 rounded-lg disabled:opacity-40 hover:bg-slate-50"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => setPage(p => p + 1)}
-                disabled={page === pagination.totalPages}
-                className="px-3 py-1.5 text-sm border border-slate-200 rounded-lg disabled:opacity-40 hover:bg-slate-50"
-              >
-                Next
-              </button>
+            <div style={{ display: "flex", gap: "8px" }}>
+              {[
+                { label: "Previous", action: () => setPage(p => p - 1), disabled: page === 1 },
+                { label: "Next", action: () => setPage(p => p + 1), disabled: page === pagination.totalPages }
+              ].map((btn) => (
+                <button
+                  key={btn.label}
+                  onClick={btn.action}
+                  disabled={btn.disabled}
+                  style={{
+                    padding: "7px 14px", fontSize: "0.8rem", fontWeight: "600",
+                    border: "1.5px solid #e2e8f0", borderRadius: "8px",
+                    background: "white", color: btn.disabled ? "#cbd5e1" : "#374151",
+                    cursor: btn.disabled ? "not-allowed" : "pointer",
+                    fontFamily: "inherit"
+                  }}
+                >
+                  {btn.label}
+                </button>
+              ))}
             </div>
           </div>
         )}
