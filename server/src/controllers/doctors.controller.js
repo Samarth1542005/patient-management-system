@@ -68,6 +68,7 @@ const getAllDoctors = async (req, res) => {
         experience: true,
         phone: true,
         avatarUrl: true,
+        isVerified: true,
       },
     });
 
@@ -126,9 +127,62 @@ const getDoctorStats = async (req, res) => {
   }
 };
 
+// ── VERIFY NMC NUMBER (Doctor only) ───────────────
+const verifyNMC = async (req, res) => {
+  try {
+    const { nmcNumber } = req.body;
+
+    if (!nmcNumber) return sendError(res, 400, "NMC number is required.");
+
+    // Check if already verified
+    const doctor = await prisma.doctor.findUnique({
+      where: { userId: req.user.id },
+    });
+
+    if (!doctor) return sendError(res, 404, "Doctor profile not found.");
+
+    if (doctor.isVerified) {
+      return sendError(res, 400, "Your account is already verified.");
+    }
+
+    // Check if NMC number is already used by another doctor
+    const alreadyUsed = await prisma.doctor.findUnique({
+      where: { nmcNumber },
+    });
+
+    if (alreadyUsed) {
+      return sendError(res, 400, "This NMC number is already registered.");
+    }
+
+    // Check against NMC registry
+    const registryEntry = await prisma.nMCRegistry.findUnique({
+      where: { nmcNumber },
+    });
+
+    if (!registryEntry) {
+      return sendError(res, 404, "NMC number not found in registry. Please check and try again.");
+    }
+
+    // Mark doctor as verified
+    const updatedDoctor = await prisma.doctor.update({
+      where: { userId: req.user.id },
+      data: {
+        nmcNumber,
+        isVerified: true,
+      },
+    });
+
+    return sendSuccess(res, 200, "NMC verification successful! Your profile is now verified.", updatedDoctor);
+  } catch (err) {
+    console.error(err);
+    return sendError(res, 500, "Something went wrong.");
+  }
+};
+
 module.exports = {
   getMyProfile,
   updateMyProfile,
   getAllDoctors,
   getDoctorStats,
+  verifyNMC,
 };

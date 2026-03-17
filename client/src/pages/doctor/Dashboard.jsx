@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, CalendarDays, FileText, Clock, TrendingUp, ArrowRight } from "lucide-react";
+import { Users, CalendarDays, FileText, Clock, TrendingUp, ArrowRight, ShieldCheck, ShieldAlert, X } from "lucide-react";
 import PageWrapper from "../../components/layout/PageWrapper";
-import { getDoctorStats } from "../../api/doctors";
+import { getDoctorStats, verifyNMC, getMyProfile } from "../../api/doctors";
 import { getDoctorAppointments } from "../../api/appointments";
 import { formatDateTime, getStatusColor } from "../../lib/utils";
 import useAuthStore from "../../store/authStore";
@@ -42,15 +42,25 @@ export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // NMC verification states
+  const [isVerified, setIsVerified] = useState(false);
+  const [showNMCForm, setShowNMCForm] = useState(false);
+  const [nmcNumber, setNmcNumber] = useState("");
+  const [nmcLoading, setNmcLoading] = useState(false);
+  const [nmcError, setNmcError] = useState("");
+  const [nmcSuccess, setNmcSuccess] = useState("");
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsRes, apptRes] = await Promise.all([
+        const [statsRes, apptRes, profileRes] = await Promise.all([
           getDoctorStats(),
           getDoctorAppointments(),
+          getMyProfile(),
         ]);
         setStats(statsRes.data.data);
         setAppointments(apptRes.data.data.slice(0, 6));
+        setIsVerified(profileRes.data.data.isVerified);
       } catch (err) {
         console.error(err);
       } finally {
@@ -59,6 +69,26 @@ export default function DoctorDashboard() {
     };
     fetchData();
   }, []);
+
+  const handleNMCSubmit = async () => {
+    if (!nmcNumber.trim()) {
+      setNmcError("Please enter your NMC number.");
+      return;
+    }
+    setNmcLoading(true);
+    setNmcError("");
+    setNmcSuccess("");
+    try {
+      await verifyNMC(nmcNumber.trim());
+      setIsVerified(true);
+      setNmcSuccess("Your profile is now verified!");
+      setShowNMCForm(false);
+    } catch (err) {
+      setNmcError(err.response?.data?.message || "Verification failed. Try again.");
+    } finally {
+      setNmcLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -75,12 +105,139 @@ export default function DoctorDashboard() {
   }
 
   const today = new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const firstName = user?.doctor?.name?.replace(/^Dr\.\s*/i, "").split(" ")[0] || "Doctor";
 
   return (
     <PageWrapper
-      title={`Good day, ${user?.doctor?.name?.split(" ")[0] || "Doctor"}`}
+      title={
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          {`Good day, Dr. ${firstName}`}
+          {isVerified && (
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: "4px",
+              backgroundColor: "#dcfce7", color: "#16a34a",
+              fontSize: "0.7rem", fontWeight: "700",
+              padding: "3px 10px", borderRadius: "999px",
+              border: "1px solid #bbf7d0",
+            }}>
+              <ShieldCheck size={12} />
+              Verified
+            </span>
+          )}
+        </div>
+      }
       subtitle={today}
     >
+
+      {/* NMC Verified success flash */}
+      {nmcSuccess && (
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0",
+          borderRadius: "12px", padding: "14px 18px",
+          marginBottom: "1.25rem", gap: "10px",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <ShieldCheck size={18} color="#16a34a" />
+            <span style={{ color: "#16a34a", fontWeight: "600", fontSize: "0.875rem" }}>
+              {nmcSuccess}
+            </span>
+          </div>
+          <button onClick={() => setNmcSuccess("")} style={{ background: "none", border: "none", cursor: "pointer" }}>
+            <X size={16} color="#16a34a" />
+          </button>
+        </div>
+      )}
+
+      {/* NMC Verification Banner — only show if not verified */}
+      {!isVerified && (
+        <div style={{
+          backgroundColor: "#fffbeb", border: "1px solid #fde68a",
+          borderRadius: "12px", padding: "16px 20px",
+          marginBottom: "1.5rem",
+          display: "flex", alignItems: "center",
+          justifyContent: "space-between", gap: "12px",
+          flexWrap: "wrap",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <ShieldAlert size={20} color="#d97706" />
+            <div>
+              <p style={{ fontWeight: "700", color: "#92400e", fontSize: "0.875rem" }}>
+                Your profile is not verified
+              </p>
+              <p style={{ color: "#b45309", fontSize: "0.8rem", marginTop: "2px" }}>
+                Enter your NMC registration number to get a verified badge
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowNMCForm(!showNMCForm)}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#d97706", color: "#fff",
+              border: "none", borderRadius: "8px",
+              fontSize: "0.825rem", fontWeight: "600",
+              cursor: "pointer", whiteSpace: "nowrap",
+            }}
+          >
+            {showNMCForm ? "Cancel" : "Verify Now"}
+          </button>
+        </div>
+      )}
+
+      {/* NMC Form */}
+      {showNMCForm && !isVerified && (
+        <div style={{
+          backgroundColor: "#fff", border: "1px solid #e2e8f0",
+          borderRadius: "12px", padding: "20px",
+          marginBottom: "1.5rem",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+        }}>
+          <p style={{ fontWeight: "700", color: "#0f172a", fontSize: "0.9rem", marginBottom: "4px" }}>
+            Enter NMC Registration Number
+          </p>
+          <p style={{ color: "#64748b", fontSize: "0.8rem", marginBottom: "14px" }}>
+            Format: STATE-YEAR-XXXXX (e.g. MH-2019-12345)
+          </p>
+
+          {nmcError && (
+            <div style={{
+              backgroundColor: "#fef2f2", border: "1px solid #fecaca",
+              borderRadius: "8px", padding: "10px 14px",
+              color: "#dc2626", fontSize: "0.825rem",
+              marginBottom: "12px",
+            }}>
+              {nmcError}
+            </div>
+          )}
+
+          <div style={{ display: "flex", gap: "10px" }}>
+            <input
+              type="text"
+              value={nmcNumber}
+              onChange={(e) => setNmcNumber(e.target.value)}
+              placeholder="e.g. MH-2019-12345"
+              className="form-input"
+              style={{ flex: 1 }}
+            />
+            <button
+              onClick={handleNMCSubmit}
+              disabled={nmcLoading}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: nmcLoading ? "#93c5fd" : "#2563eb",
+                color: "#fff", border: "none",
+                borderRadius: "10px", fontSize: "0.875rem",
+                fontWeight: "600", cursor: nmcLoading ? "not-allowed" : "pointer",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {nmcLoading ? "Verifying..." : "Submit"}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Stat Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1.25rem", marginBottom: "2rem" }}>
         <StatCard title="Total Patients" value={stats?.totalPatients ?? 0} icon={Users} bg="#eff6ff" iconColor="#2563eb" delay={0} />

@@ -5,6 +5,7 @@ const {
   updateMyProfile,
   getAllDoctors,
   getDoctorStats,
+  verifyNMC,
 } = require("../controllers/doctors.controller");
 const verifyToken = require("../middlewares/verifyToken");
 const checkRole = require("../middlewares/checkRole");
@@ -16,5 +17,6 @@ router.get("/", verifyToken, getAllDoctors);
 router.get("/me", verifyToken, checkRole("DOCTOR"), getMyProfile);
 router.patch("/me", verifyToken, checkRole("DOCTOR"), updateMyProfile);
 router.get("/stats", verifyToken, checkRole("DOCTOR"), getDoctorStats);
+router.post("/verify-nmc", verifyToken, checkRole("DOCTOR"), verifyNMC);
 
 module.exports = router;

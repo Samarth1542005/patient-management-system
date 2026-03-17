@@ -64,6 +64,8 @@ model Doctor {
   experience     Int
   phone          String?
   avatarUrl      String?
+  nmcNumber      String?  @unique
+  isVerified     Boolean  @default(false)
 
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -173,5 +175,14 @@ model VitalSign {
   height        Float?
   oxygenSat     Float?
 
+  createdAt     DateTime @default(now())
+}
+
+model NMCRegistry {
+  id            String   @id @default(uuid())
+  nmcNumber     String   @unique
+  doctorName    String
+  specialization String
+  council       String
   createdAt     DateTime @default(now())
 }
