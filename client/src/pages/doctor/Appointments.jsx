@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CalendarDays, Clock, CheckCircle, XCircle, ChevronRight } from "lucide-react";
+import { CalendarDays, Clock, CheckCircle, XCircle } from "lucide-react";
 import PageWrapper from "../../components/layout/PageWrapper";
 import { getDoctorAppointments, updateAppointmentStatus } from "../../api/appointments";
 import { formatDateTime, getStatusColor } from "../../lib/utils";
@@ -48,16 +48,24 @@ export default function DoctorAppointments() {
     <PageWrapper title="Appointments" subtitle="Manage and update patient appointments">
 
       {/* Filter Pills */}
-      <div className="flex gap-2 mb-6 flex-wrap">
+      <div style={{ display: "flex", gap: "8px", marginBottom: "1.5rem", flexWrap: "wrap" }}>
         {filters.map((f) => (
           <button
             key={f.value}
             onClick={() => setStatusFilter(f.value)}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-150 ${
-              statusFilter === f.value
-                ? "bg-slate-900 text-white shadow-sm"
-                : "bg-white text-slate-500 border border-slate-200 hover:border-slate-300 hover:text-slate-700"
-            }`}
+            style={{
+              padding: "8px 16px",
+              borderRadius: "10px",
+              fontSize: "0.84rem",
+              fontWeight: "700",
+              border: statusFilter === f.value ? "none" : "1.5px solid #e2e8f0",
+              background: statusFilter === f.value ? "#0f172a" : "white",
+              color: statusFilter === f.value ? "white" : "#64748b",
+              cursor: "pointer",
+              fontFamily: "inherit",
+              transition: "all 0.15s ease",
+              boxShadow: statusFilter === f.value ? "0 2px 8px rgba(0,0,0,0.15)" : "none",
+            }}
           >
             {f.label}
           </button>
@@ -66,54 +74,63 @@ export default function DoctorAppointments() {
 
       {/* Appointments */}
       {loading ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "16rem" }}>
+          <div style={{
+            width: "32px", height: "32px",
+            border: "3px solid #2563eb", borderTopColor: "transparent",
+            borderRadius: "50%", animation: "spin 0.8s linear infinite",
+          }} />
         </div>
       ) : appointments.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-20 text-center">
-          <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <CalendarDays size={24} className="text-slate-400" />
+        <div className="card empty-state">
+          <div className="empty-state-icon">
+            <CalendarDays size={24} color="#94a3b8" />
           </div>
-          <p className="text-slate-600 font-semibold">No appointments found</p>
-          <p className="text-slate-400 text-sm mt-1">Try changing the filter above</p>
+          <h3>No appointments found</h3>
+          <p>Try changing the filter above</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {appointments.map((appt) => (
-            <div key={appt.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-primary-50 flex items-center justify-center text-primary-700 font-bold text-base flex-shrink-0">
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          {appointments.map((appt, i) => (
+            <div key={appt.id} className="card" style={{
+              padding: "1.25rem 1.5rem",
+              animation: `fadeIn 0.35s ease-out ${i * 40}ms both`,
+            }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                  <div className="avatar avatar-md" style={{ background: "#eff6ff", color: "#2563eb" }}>
                     {appt.patient?.name?.[0]}
                   </div>
                   <div>
-                    <p className="font-semibold text-slate-900">{appt.patient?.name}</p>
-                    <p className="text-sm text-slate-500 mt-0.5">{appt.reason}</p>
-                    <div className="flex items-center gap-1.5 mt-1.5">
-                      <Clock size={12} className="text-slate-400" />
-                      <p className="text-xs text-slate-400">{formatDateTime(appt.date)}</p>
+                    <p style={{ fontWeight: "700", color: "#0f172a", fontSize: "0.95rem" }}>{appt.patient?.name}</p>
+                    <p style={{ fontSize: "0.84rem", color: "#64748b", marginTop: "3px" }}>{appt.reason}</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "6px" }}>
+                      <Clock size={12} color="#94a3b8" />
+                      <p style={{ fontSize: "0.75rem", color: "#94a3b8" }}>{formatDateTime(appt.date)}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <span className={`text-xs font-semibold px-3 py-1.5 rounded-full ${getStatusColor(appt.status)}`}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span className={`status-badge ${getStatusColor(appt.status)}`}>
                     {appt.status}
                   </span>
 
                   {appt.status === "PENDING" && (
-                    <div className="flex gap-2">
+                    <div style={{ display: "flex", gap: "8px" }}>
                       <button
                         onClick={() => handleStatusUpdate(appt.id, "CONFIRMED")}
                         disabled={updating === appt.id}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white text-xs font-semibold rounded-xl hover:bg-primary-700 disabled:opacity-50 transition-colors"
+                        className="btn btn-primary"
+                        style={{ padding: "6px 14px", fontSize: "0.75rem", borderRadius: "9px" }}
                       >
                         <CheckCircle size={13} /> Confirm
                       </button>
                       <button
                         onClick={() => handleStatusUpdate(appt.id, "CANCELLED")}
                         disabled={updating === appt.id}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 text-xs font-semibold rounded-xl hover:bg-red-100 disabled:opacity-50 transition-colors"
+                        className="btn btn-danger"
+                        style={{ padding: "6px 14px", fontSize: "0.75rem", borderRadius: "9px" }}
                       >
                         <XCircle size={13} /> Cancel
                       </button>
@@ -124,7 +141,8 @@ export default function DoctorAppointments() {
                     <button
                       onClick={() => handleStatusUpdate(appt.id, "COMPLETED")}
                       disabled={updating === appt.id}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+                      className="btn btn-success"
+                      style={{ padding: "6px 14px", fontSize: "0.75rem", borderRadius: "9px" }}
                     >
                       <CheckCircle size={13} /> Mark Complete
                     </button>
@@ -133,8 +151,8 @@ export default function DoctorAppointments() {
               </div>
 
               {appt.notes && (
-                <div className="mt-4 pt-4 border-t border-slate-50">
-                  <p className="text-sm text-slate-500 bg-slate-50 rounded-xl px-4 py-2.5">{appt.notes}</p>
+                <div style={{ marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid #f1f5f9" }}>
+                  <p style={{ fontSize: "0.84rem", color: "#64748b", background: "#f8fafc", borderRadius: "10px", padding: "10px 14px" }}>{appt.notes}</p>
                 </div>
               )}
             </div>

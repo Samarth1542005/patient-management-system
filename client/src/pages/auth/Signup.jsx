@@ -3,19 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { signup } from "../../api/auth";
 import { Stethoscope, ArrowRight } from "lucide-react";
 
-const inputStyle = {
-  width: "100%", padding: "11px 14px",
-  border: "1.5px solid #e2e8f0", borderRadius: "10px",
-  fontSize: "0.875rem", color: "#0f172a",
-  backgroundColor: "white", outline: "none",
-  boxSizing: "border-box", fontFamily: "inherit"
-};
-
-const labelStyle = {
-  display: "block", fontSize: "0.8rem",
-  fontWeight: "600", color: "#374151", marginBottom: "6px"
-};
-
 export default function Signup() {
   const navigate = useNavigate();
   const [role, setRole] = useState("PATIENT");
@@ -60,13 +47,14 @@ export default function Signup() {
 
       {/* Main content */}
       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
-        <div style={{ width: "100%", maxWidth: "480px" }}>
+        <div className="animate-fade-in" style={{ width: "100%", maxWidth: "480px" }}>
 
           {/* Header */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "2rem" }}>
             <div style={{
               width: "38px", height: "38px", background: "#2563eb",
-              borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center"
+              borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center",
+              boxShadow: "0 2px 8px rgba(37,99,235,0.3)",
             }}>
               <Stethoscope size={18} color="white" />
             </div>
@@ -77,25 +65,14 @@ export default function Signup() {
           </div>
 
           {/* Role Toggle */}
-          <div style={{
-            display: "flex", background: "#f1f5f9",
-            borderRadius: "12px", padding: "4px", marginBottom: "1.5rem"
-          }}>
+          <div className="tab-bar" style={{ width: "100%", marginBottom: "1.5rem" }}>
             {["PATIENT", "DOCTOR"].map((r) => (
               <button
                 key={r}
                 type="button"
                 onClick={() => setRole(r)}
-                style={{
-                  flex: 1, padding: "9px",
-                  borderRadius: "9px", border: "none",
-                  background: role === r ? "white" : "transparent",
-                  color: role === r ? "#2563eb" : "#64748b",
-                  fontWeight: "700", fontSize: "0.875rem",
-                  cursor: "pointer", fontFamily: "inherit",
-                  boxShadow: role === r ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
-                  transition: "all 0.15s"
-                }}
+                className={`tab-btn ${role === r ? "active" : ""}`}
+                style={{ flex: 1, justifyContent: "center" }}
               >
                 {r === "PATIENT" ? "Patient" : "Doctor"}
               </button>
@@ -115,37 +92,29 @@ export default function Signup() {
           <form onSubmit={handleSubmit}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
               <div style={{ gridColumn: "1 / -1" }}>
-                <label style={labelStyle}>Full Name</label>
-                <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="John Doe" required style={inputStyle}
-                  onFocus={(e) => e.target.style.borderColor = "#2563eb"}
-                  onBlur={(e) => e.target.style.borderColor = "#e2e8f0"} />
+                <label className="form-label">Full Name</label>
+                <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="John Doe" required className="form-input" />
               </div>
 
               <div style={{ gridColumn: "1 / -1" }}>
-                <label style={labelStyle}>Email Address</label>
-                <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="you@example.com" required style={inputStyle}
-                  onFocus={(e) => e.target.style.borderColor = "#2563eb"}
-                  onBlur={(e) => e.target.style.borderColor = "#e2e8f0"} />
+                <label className="form-label">Email Address</label>
+                <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="you@example.com" required className="form-input" />
               </div>
 
               <div style={{ gridColumn: "1 / -1" }}>
-                <label style={labelStyle}>Password</label>
-                <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="••••••••" required style={inputStyle}
-                  onFocus={(e) => e.target.style.borderColor = "#2563eb"}
-                  onBlur={(e) => e.target.style.borderColor = "#e2e8f0"} />
+                <label className="form-label">Password</label>
+                <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="••••••••" required className="form-input" />
               </div>
 
               {role === "PATIENT" && (
                 <>
                   <div>
-                    <label style={labelStyle}>Date of Birth</label>
-                    <input type="date" name="dob" value={formData.dob} onChange={handleChange} required style={inputStyle}
-                      onFocus={(e) => e.target.style.borderColor = "#2563eb"}
-                      onBlur={(e) => e.target.style.borderColor = "#e2e8f0"} />
+                    <label className="form-label">Date of Birth</label>
+                    <input type="date" name="dob" value={formData.dob} onChange={handleChange} required className="form-input" />
                   </div>
                   <div>
-                    <label style={labelStyle}>Gender</label>
-                    <select name="gender" value={formData.gender} onChange={handleChange} style={inputStyle}>
+                    <label className="form-label">Gender</label>
+                    <select name="gender" value={formData.gender} onChange={handleChange} className="form-input">
                       <option value="MALE">Male</option>
                       <option value="FEMALE">Female</option>
                       <option value="OTHER">Other</option>
@@ -157,22 +126,16 @@ export default function Signup() {
               {role === "DOCTOR" && (
                 <>
                   <div>
-                    <label style={labelStyle}>Specialization</label>
-                    <input type="text" name="specialization" value={formData.specialization} onChange={handleChange} placeholder="e.g. Cardiology" required style={inputStyle}
-                      onFocus={(e) => e.target.style.borderColor = "#2563eb"}
-                      onBlur={(e) => e.target.style.borderColor = "#e2e8f0"} />
+                    <label className="form-label">Specialization</label>
+                    <input type="text" name="specialization" value={formData.specialization} onChange={handleChange} placeholder="e.g. Cardiology" required className="form-input" />
                   </div>
                   <div>
-                    <label style={labelStyle}>Qualification</label>
-                    <input type="text" name="qualification" value={formData.qualification} onChange={handleChange} placeholder="e.g. MBBS, MD" required style={inputStyle}
-                      onFocus={(e) => e.target.style.borderColor = "#2563eb"}
-                      onBlur={(e) => e.target.style.borderColor = "#e2e8f0"} />
+                    <label className="form-label">Qualification</label>
+                    <input type="text" name="qualification" value={formData.qualification} onChange={handleChange} placeholder="e.g. MBBS, MD" required className="form-input" />
                   </div>
                   <div style={{ gridColumn: "1 / -1" }}>
-                    <label style={labelStyle}>Years of Experience</label>
-                    <input type="number" name="experience" value={formData.experience} onChange={handleChange} placeholder="e.g. 5" required style={inputStyle}
-                      onFocus={(e) => e.target.style.borderColor = "#2563eb"}
-                      onBlur={(e) => e.target.style.borderColor = "#e2e8f0"} />
+                    <label className="form-label">Years of Experience</label>
+                    <input type="number" name="experience" value={formData.experience} onChange={handleChange} placeholder="e.g. 5" required className="form-input" />
                   </div>
                 </>
               )}
@@ -181,18 +144,14 @@ export default function Signup() {
             <button
               type="submit"
               disabled={loading}
+              className="btn btn-primary"
               style={{
                 width: "100%", padding: "13px",
-                background: loading ? "#93c5fd" : "#2563eb",
-                color: "white", border: "none",
-                borderRadius: "10px", fontSize: "0.95rem",
-                fontWeight: "700", cursor: loading ? "not-allowed" : "pointer",
-                display: "flex", alignItems: "center",
-                justifyContent: "center", gap: "8px",
-                fontFamily: "inherit", marginTop: "0.5rem"
+                fontSize: "0.95rem", marginTop: "0.5rem",
+                opacity: loading ? 0.6 : 1,
+                cursor: loading ? "not-allowed" : "pointer",
+                boxShadow: "0 2px 8px rgba(37,99,235,0.3)",
               }}
-              onMouseEnter={(e) => { if (!loading) e.target.style.background = "#1d4ed8" }}
-              onMouseLeave={(e) => { if (!loading) e.target.style.background = "#2563eb" }}
             >
               {loading ? "Creating account..." : "Create Account"}
               {!loading && <ArrowRight size={16} />}

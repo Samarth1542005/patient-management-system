@@ -115,7 +115,7 @@ export default function Login() {
         padding: "3rem",
         backgroundColor: "#f8fafc"
       }}>
-        <div style={{ width: "100%", maxWidth: "420px" }}>
+        <div className="animate-fade-in" style={{ width: "100%", maxWidth: "420px" }}>
           <div style={{ marginBottom: "2.5rem" }}>
             <h2 style={{ fontSize: "1.875rem", fontWeight: "800", color: "#0f172a", marginBottom: "0.5rem" }}>
               Welcome back
@@ -138,7 +138,7 @@ export default function Login() {
 
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: "1.25rem" }}>
-              <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "600", color: "#374151", marginBottom: "8px" }}>
+              <label className="form-label" style={{ fontSize: "0.875rem", marginBottom: "8px" }}>
                 Email Address
               </label>
               <div style={{ position: "relative" }}>
@@ -150,22 +150,14 @@ export default function Login() {
                   onChange={handleChange}
                   placeholder="you@example.com"
                   required
-                  style={{
-                    width: "100%", padding: "12px 16px 12px 42px",
-                    border: "1.5px solid #e2e8f0", borderRadius: "10px",
-                    fontSize: "0.9rem", color: "#0f172a",
-                    backgroundColor: "white", outline: "none",
-                    boxSizing: "border-box",
-                    transition: "border-color 0.15s"
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = "#2563eb"}
-                  onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}
+                  className="form-input"
+                  style={{ padding: "12px 16px 12px 42px", fontSize: "0.9rem" }}
                 />
               </div>
             </div>
 
             <div style={{ marginBottom: "1.75rem" }}>
-              <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "600", color: "#374151", marginBottom: "8px" }}>
+              <label className="form-label" style={{ fontSize: "0.875rem", marginBottom: "8px" }}>
                 Password
               </label>
               <div style={{ position: "relative" }}>
@@ -177,16 +169,8 @@ export default function Login() {
                   onChange={handleChange}
                   placeholder="••••••••"
                   required
-                  style={{
-                    width: "100%", padding: "12px 16px 12px 42px",
-                    border: "1.5px solid #e2e8f0", borderRadius: "10px",
-                    fontSize: "0.9rem", color: "#0f172a",
-                    backgroundColor: "white", outline: "none",
-                    boxSizing: "border-box",
-                    transition: "border-color 0.15s"
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = "#2563eb"}
-                  onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}
+                  className="form-input"
+                  style={{ padding: "12px 16px 12px 42px", fontSize: "0.9rem" }}
                 />
               </div>
             </div>
@@ -194,19 +178,14 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
+              className="btn btn-primary"
               style={{
                 width: "100%", padding: "13px",
-                background: loading ? "#93c5fd" : "#2563eb",
-                color: "white", border: "none",
-                borderRadius: "10px", fontSize: "0.95rem",
-                fontWeight: "700", cursor: loading ? "not-allowed" : "pointer",
-                display: "flex", alignItems: "center",
-                justifyContent: "center", gap: "8px",
-                transition: "background 0.15s",
-                fontFamily: "inherit"
+                fontSize: "0.95rem",
+                opacity: loading ? 0.6 : 1,
+                cursor: loading ? "not-allowed" : "pointer",
+                boxShadow: "0 2px 8px rgba(37,99,235,0.3)",
               }}
-              onMouseEnter={(e) => { if (!loading) e.target.style.background = "#1d4ed8" }}
-              onMouseLeave={(e) => { if (!loading) e.target.style.background = "#2563eb" }}
             >
               {loading ? "Signing in..." : "Sign In"}
               {!loading && <ArrowRight size={16} />}

@@ -7,20 +7,31 @@ import { getDoctorAppointments } from "../../api/appointments";
 import { formatDateTime, getStatusColor } from "../../lib/utils";
 import useAuthStore from "../../store/authStore";
 
-const StatCard = ({ title, value, icon: Icon, bg, text, trend }) => (
-  <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-    <div className="flex items-start justify-between mb-4">
-      <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${bg}`}>
-        <Icon size={20} className={text} />
+const StatCard = ({ title, value, icon: Icon, bg, iconColor, trend, delay }) => (
+  <div className="card" style={{
+    padding: "1.5rem",
+    animation: `fadeIn 0.4s ease-out ${delay}ms both`,
+  }}>
+    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "1rem" }}>
+      <div style={{
+        width: "44px", height: "44px", borderRadius: "12px",
+        background: bg, display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <Icon size={20} color={iconColor} />
       </div>
       {trend && (
-        <span className="flex items-center gap-1 text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+        <span style={{
+          display: "inline-flex", alignItems: "center", gap: "4px",
+          fontSize: "0.7rem", fontWeight: "700",
+          color: "#059669", background: "#ecfdf5",
+          padding: "3px 8px", borderRadius: "999px",
+        }}>
           <TrendingUp size={11} /> {trend}
         </span>
       )}
     </div>
-    <p className="text-3xl font-bold text-slate-900 mb-1">{value}</p>
-    <p className="text-sm text-slate-500 font-medium">{title}</p>
+    <p style={{ fontSize: "2rem", fontWeight: "800", color: "#0f172a", letterSpacing: "-0.02em", marginBottom: "2px" }}>{value}</p>
+    <p style={{ fontSize: "0.84rem", color: "#64748b", fontWeight: "500" }}>{title}</p>
   </div>
 );
 
@@ -52,8 +63,12 @@ export default function DoctorDashboard() {
   if (loading) {
     return (
       <PageWrapper title="Dashboard">
-        <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "16rem" }}>
+          <div style={{
+            width: "32px", height: "32px",
+            border: "3px solid #2563eb", borderTopColor: "transparent",
+            borderRadius: "50%", animation: "spin 0.8s linear infinite",
+          }} />
         </div>
       </PageWrapper>
     );
@@ -67,51 +82,72 @@ export default function DoctorDashboard() {
       subtitle={today}
     >
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        <StatCard title="Total Patients" value={stats?.totalPatients ?? 0} icon={Users} bg="bg-blue-50" text="text-blue-600" />
-        <StatCard title="Pending" value={stats?.pendingAppointments ?? 0} icon={Clock} bg="bg-amber-50" text="text-amber-600" />
-        <StatCard title="Confirmed" value={stats?.confirmedAppointments ?? 0} icon={CalendarDays} bg="bg-violet-50" text="text-violet-600" />
-        <StatCard title="Prescriptions" value={stats?.totalPrescriptions ?? 0} icon={FileText} bg="bg-emerald-50" text="text-emerald-600" />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1.25rem", marginBottom: "2rem" }}>
+        <StatCard title="Total Patients" value={stats?.totalPatients ?? 0} icon={Users} bg="#eff6ff" iconColor="#2563eb" delay={0} />
+        <StatCard title="Pending" value={stats?.pendingAppointments ?? 0} icon={Clock} bg="#fffbeb" iconColor="#d97706" delay={60} />
+        <StatCard title="Confirmed" value={stats?.confirmedAppointments ?? 0} icon={CalendarDays} bg="#f5f3ff" iconColor="#7c3aed" delay={120} />
+        <StatCard title="Prescriptions" value={stats?.totalPrescriptions ?? 0} icon={FileText} bg="#ecfdf5" iconColor="#059669" delay={180} />
       </div>
 
       {/* Recent Appointments */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+      <div className="card" style={{ overflow: "hidden", animation: "fadeIn 0.5s ease-out 200ms both" }}>
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "1.25rem 1.5rem",
+          borderBottom: "1px solid #f1f5f9",
+        }}>
           <div>
-            <h3 className="font-semibold text-slate-900">Recent Appointments</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Latest patient appointments</p>
+            <h3 style={{ fontWeight: "700", color: "#0f172a", fontSize: "0.95rem" }}>Recent Appointments</h3>
+            <p style={{ fontSize: "0.75rem", color: "#94a3b8", marginTop: "2px" }}>Latest patient appointments</p>
           </div>
           <button
             onClick={() => navigate("/doctor/appointments")}
-            className="flex items-center gap-1.5 text-sm text-primary-600 font-medium hover:text-primary-700"
+            style={{
+              display: "flex", alignItems: "center", gap: "6px",
+              color: "#2563eb", fontSize: "0.8rem", fontWeight: "700",
+              background: "none", border: "none", cursor: "pointer", fontFamily: "inherit",
+              padding: "6px 12px", borderRadius: "8px",
+              transition: "background 0.15s ease",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#eff6ff"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "none"}
           >
             View all <ArrowRight size={15} />
           </button>
         </div>
 
         {appointments.length === 0 ? (
-          <div className="px-6 py-16 text-center">
-            <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
-              <CalendarDays size={22} className="text-slate-400" />
+          <div className="empty-state">
+            <div className="empty-state-icon">
+              <CalendarDays size={22} color="#94a3b8" />
             </div>
-            <p className="text-slate-500 font-medium">No appointments yet</p>
-            <p className="text-slate-400 text-sm mt-1">Appointments will appear here</p>
+            <h3>No appointments yet</h3>
+            <p>Appointments will appear here</p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-50">
-            {appointments.map((appt) => (
-              <div key={appt.id} className="px-6 py-4 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center text-primary-700 font-bold text-sm flex-shrink-0">
+          <div>
+            {appointments.map((appt, i) => (
+              <div key={appt.id} style={{
+                padding: "0.875rem 1.5rem",
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                borderBottom: i < appointments.length - 1 ? "1px solid #f8fafc" : "none",
+                transition: "background 0.1s ease",
+                cursor: "default",
+              }}
+                onMouseEnter={(e) => e.currentTarget.style.background = "#fafbfc"}
+                onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                  <div className="avatar avatar-sm" style={{ background: "#eff6ff", color: "#2563eb" }}>
                     {appt.patient?.name?.[0]}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-800">{appt.patient?.name}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">{appt.reason}</p>
+                    <p style={{ fontSize: "0.875rem", fontWeight: "600", color: "#0f172a" }}>{appt.patient?.name}</p>
+                    <p style={{ fontSize: "0.75rem", color: "#94a3b8", marginTop: "2px" }}>{appt.reason}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <p className="text-xs text-slate-400 hidden sm:block">{formatDateTime(appt.date)}</p>
+                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                  <p style={{ fontSize: "0.75rem", color: "#94a3b8" }}>{formatDateTime(appt.date)}</p>
                   <span className={`text-xs font-semibold px-3 py-1 rounded-full ${getStatusColor(appt.status)}`}>
                     {appt.status}
                   </span>
