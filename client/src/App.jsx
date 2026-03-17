@@ -18,6 +18,7 @@ import PatientDashboard from "./pages/patient/Dashboard";
 import MyAppointments from "./pages/patient/MyAppointments";
 import MyPrescriptions from "./pages/patient/MyPrescriptions";
 import MyHistory from "./pages/patient/MyHistory";
+import SymptomChecker from "./pages/patient/SymptomChecker";
 
 // Protected route wrapper
 const ProtectedRoute = ({ children, role }) => {
@@ -71,6 +72,7 @@ export default function App() {
         <Route path="/patient/appointments" element={<ProtectedRoute role="PATIENT"><MyAppointments /></ProtectedRoute>} />
         <Route path="/patient/prescriptions" element={<ProtectedRoute role="PATIENT"><MyPrescriptions /></ProtectedRoute>} />
         <Route path="/patient/history" element={<ProtectedRoute role="PATIENT"><MyHistory /></ProtectedRoute>} />
+        <Route path="/patient/symptom-checker" element={<ProtectedRoute role="PATIENT"><SymptomChecker /></ProtectedRoute>} />
 
         {/* Default redirect */}
         <Route
