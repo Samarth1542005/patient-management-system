@@ -1,15 +1,18 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { login } from "../../api/auth";
 import useAuthStore from "../../store/authStore";
-import { Stethoscope, Mail, Lock, ArrowRight } from "lucide-react";
+import { Stethoscope, Mail, Lock, ArrowRight, CheckCircle } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { setAuth } = useAuthStore();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const justVerified = location.state?.verified || false;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -46,7 +49,6 @@ export default function Login() {
         position: "relative",
         overflow: "hidden"
       }}>
-        {/* Background decoration */}
         <div style={{
           position: "absolute", top: "-80px", right: "-80px",
           width: "300px", height: "300px",
@@ -125,6 +127,21 @@ export default function Login() {
             </p>
           </div>
 
+          {/* Email verified success banner */}
+          {justVerified && (
+            <div style={{
+              display: "flex", alignItems: "center", gap: "8px",
+              backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0",
+              color: "#16a34a", padding: "12px 16px",
+              borderRadius: "10px", marginBottom: "1.5rem",
+              fontSize: "0.875rem", fontWeight: "500",
+            }}>
+              <CheckCircle size={16} />
+              Email verified! You can now log in.
+            </div>
+          )}
+
+          {/* Error banner */}
           {error && (
             <div style={{
               background: "#fef2f2", border: "1px solid #fecaca",

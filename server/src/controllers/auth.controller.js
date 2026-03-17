@@ -13,12 +13,12 @@ const signup = async (req, res) => {
   const { email, password, role, name } = req.body;
 
   try {
-    // 1. Create user in Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { role }, // stored in user_metadata
+        data: { role },
+        emailRedirectTo: `${process.env.CLIENT_URL}/verify-email`,
       },
     });
 
@@ -26,16 +26,14 @@ const signup = async (req, res) => {
 
     const supabaseUserId = data.user.id;
 
-    // 2. Create User record in our DB
     const user = await prisma.user.create({
       data: {
-        id: supabaseUserId, // keep IDs in sync
+        id: supabaseUserId,
         email,
         role,
       },
     });
 
-    // 3. Create Doctor or Patient profile
     if (role === "DOCTOR") {
       await prisma.doctor.create({
         data: {
@@ -57,7 +55,7 @@ const signup = async (req, res) => {
       });
     }
 
-    return sendSuccess(res, 201, "Account created successfully. Please verify your email.");
+    return sendSuccess(res, 201, "Account created successfully. Please check your email to verify your account.");
   } catch (err) {
     console.error(err);
     return sendError(res, 500, "Something went wrong during signup.");
@@ -76,13 +74,16 @@ const login = async (req, res) => {
 
     if (error) return sendError(res, 401, error.message);
 
-    const { access_token, user } = data.session ? 
-      { access_token: data.session.access_token, user: data.user } : 
+    if (!data.user.email_confirmed_at) {
+      return sendError(res, 403, "Please verify your email before logging in.");
+    }
+
+    const { access_token, user } = data.session ?
+      { access_token: data.session.access_token, user: data.user } :
       { access_token: null, user: null };
 
     if (!access_token) return sendError(res, 401, "Login failed.");
 
-    // Fetch profile from our DB
     const dbUser = await prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -111,4 +112,27 @@ const logout = async (req, res) => {
   }
 };
 
-module.exports = { signup, login, logout };
+// ── RESEND VERIFICATION ───────────────────────────
+const resendVerification = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) return sendError(res, 400, "Email is required.");
+
+  try {
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: {
+        emailRedirectTo: `${process.env.CLIENT_URL}/verify-email`,
+      },
+    });
+
+    if (error) return sendError(res, 400, error.message);
+
+    return sendSuccess(res, 200, "Verification email resent successfully.");
+  } catch (err) {
+    return sendError(res, 500, "Something went wrong.");
+  }
+};
+
+module.exports = { signup, login, logout, resendVerification };
