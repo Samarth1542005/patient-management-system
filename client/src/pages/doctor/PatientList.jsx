@@ -92,7 +92,9 @@ export default function PatientList() {
                       <div className="avatar avatar-sm" style={{ background: "#eff6ff", color: "#2563eb", borderRadius: "10px" }}>
                         {patient.name[0]}
                       </div>
-                      <span style={{ fontWeight: "600", color: "#0f172a" }}>{patient.name}</span>
+                      <span style={{ fontWeight: "600", color: "#0f172a" }}>
+                        {patient.name}
+                      </span>
                     </div>
                   </td>
                   <td style={{ color: "#64748b" }}>
