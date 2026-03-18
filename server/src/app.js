@@ -9,6 +9,7 @@ const patientRoutes = require("./routes/patients.routes");
 const appointmentRoutes = require("./routes/appointments.routes");
 const prescriptionRoutes = require("./routes/prescriptions.routes");
 const doctorRoutes = require("./routes/doctors.routes");
+const aiRoutes = require("./routes/ai.routes");
 
 dotenv.config();
 
@@ -30,12 +31,13 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "OK", message: "Server is running" });
 });
 
-// ── Routes (we'll add these soon) ─────────────────
+// ── Routes ────────────────────────────────────────
 app.use("/api/auth", authRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/patients", patientRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/prescriptions", prescriptionRoutes);
+app.use("/api/ai", aiRoutes);
 
 // ── Global Error Handler ──────────────────────────
 app.use((err, req, res, next) => {

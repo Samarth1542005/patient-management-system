@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Activity, Send, AlertCircle, CheckCircle, Info, Stethoscope, RefreshCw } from "lucide-react";
 import PageWrapper from "../../components/layout/PageWrapper";
-
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+import axiosInstance from "../../api/axiosInstance";
 
 const severityConfig = {
   low: { color: "#16a34a", bg: "#f0fdf4", border: "#bbf7d0", label: "Low Severity" },
@@ -26,41 +25,11 @@ export default function SymptomChecker() {
     setError("");
     setResult(null);
 
-    const prompt = `You are a medical assistant AI. A patient has described the following symptoms: "${symptoms}"
-
-Analyze these symptoms and respond ONLY with a valid JSON object in this exact format, no extra text:
-{
-  "possibleConditions": ["condition1", "condition2", "condition3"],
-  "severity": "low" or "medium" or "high",
-  "recommendedDoctor": "type of specialist",
-  "advice": "brief practical advice in 2-3 sentences",
-  "warning": "only include this field if symptoms are serious and need immediate attention, otherwise omit this field"
-}`;
-
     try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-          }),
-        }
-      );
-
-      const data = await response.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-      if (!text) throw new Error("No response from AI.");
-
-      // Strip markdown code fences if present
-      const clean = text.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(clean);
-      setResult(parsed);
+      const response = await axiosInstance.post("/ai/symptom-check", { symptoms });
+      setResult(response.data.data);
     } catch (err) {
-      console.error(err);
-      setError("Failed to analyze symptoms. Please try again.");
+      setError(err.response?.data?.message || "Failed to analyze symptoms. Please try again.");
     } finally {
       setLoading(false);
     }
