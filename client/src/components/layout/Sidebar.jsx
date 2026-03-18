@@ -8,6 +8,7 @@ import {
   LogOut,
   Stethoscope,
   ChevronRight,
+  Activity,
 } from "lucide-react";
 import useAuthStore from "../../store/authStore";
 import { logout } from "../../api/auth";
@@ -24,6 +25,7 @@ const patientLinks = [
   { path: "/patient/appointments", label: "Appointments", icon: CalendarDays },
   { path: "/patient/prescriptions", label: "Prescriptions", icon: FileText },
   { path: "/patient/history", label: "My History", icon: History },
+  { path: "/patient/symptom-checker", label: "Symptom Checker", icon: Activity },
 ];
 
 export default function Sidebar() {
