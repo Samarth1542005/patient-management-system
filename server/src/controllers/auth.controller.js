@@ -41,7 +41,7 @@ const signup = async (req, res) => {
           name,
           specialization: req.body.specialization || "General",
           qualification: req.body.qualification || "MBBS",
-          experience: req.body.experience || 0,
+          experience: parseInt(req.body.experience) || 0,
         },
       });
     } else if (role === "PATIENT") {
