@@ -122,7 +122,22 @@ export default function Landing() {
           zIndex: 100,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div 
+          onClick={() => navigate("/")}
+          style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: "12px",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = "0.85";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = "1";
+          }}
+        >
           <div
             style={{
               width: "40px",

@@ -90,7 +90,24 @@ export default function Sidebar() {
           position: "relative",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+        <div 
+          onClick={() => navigate("/")}
+          style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: "14px",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = "0.85";
+            e.currentTarget.style.transform = "translateX(2px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = "1";
+            e.currentTarget.style.transform = "translateX(0)";
+          }}
+        >
           <div
             style={{
               width: "44px",

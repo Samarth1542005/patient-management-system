@@ -115,6 +115,7 @@ export default function Signup() {
 
         {/* Logo */}
         <div
+          onClick={() => navigate("/")}
           style={{
             width: "48px",
             height: "48px",
@@ -126,6 +127,14 @@ export default function Signup() {
             alignItems: "center",
             justifyContent: "center",
             boxShadow: "0 4px 15px rgba(14, 165, 233, 0.3)",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "scale(1.05)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
           }}
         >
           <Stethoscope size={24} color="white" strokeWidth={2.5} />
@@ -133,6 +142,7 @@ export default function Signup() {
 
         {/* Vertical text */}
         <span
+          onClick={() => navigate("/")}
           style={{
             color: "rgba(255,255,255,0.5)",
             fontWeight: "800",
@@ -140,6 +150,14 @@ export default function Signup() {
             letterSpacing: "0.2em",
             writingMode: "vertical-rl",
             textTransform: "uppercase",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "rgba(255,255,255,0.8)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "rgba(255,255,255,0.5)";
           }}
         >
           MediCare

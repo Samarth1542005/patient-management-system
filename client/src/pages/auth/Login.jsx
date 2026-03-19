@@ -126,7 +126,25 @@ export default function Login() {
 
         <div style={{ position: "relative", zIndex: 1 }}>
           {/* Logo */}
-          <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "4rem" }}>
+          <div 
+            onClick={() => navigate("/")}
+            style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "14px", 
+              marginBottom: "4rem",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = "0.85";
+              e.currentTarget.style.transform = "translateX(4px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = "1";
+              e.currentTarget.style.transform = "translateX(0)";
+            }}
+          >
             <div
               style={{
                 width: "52px",
