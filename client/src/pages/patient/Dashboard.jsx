@@ -147,8 +147,14 @@ export default function PatientDashboard() {
           marginBottom: "2rem",
         }}
       >
-        {stats.map((stat, i) => {
+          {stats.map((stat, i) => {
           const Icon = stat.icon;
+          const glowColor = stat.gradient.includes("#0ea5e9")
+            ? "rgba(14, 165, 233, 0.15)"
+            : stat.gradient.includes("#f59e0b")
+            ? "rgba(245, 158, 11, 0.15)"
+            : "rgba(16, 185, 129, 0.15)";
+
           return (
             <div
               key={stat.label}
@@ -158,24 +164,22 @@ export default function PatientDashboard() {
                 animation: `fadeIn 0.4s ease-out ${i * 60}ms both`,
                 position: "relative",
                 overflow: "hidden",
+                background: isDark 
+                  ? `linear-gradient(145deg, rgba(17, 24, 39, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%)`
+                  : "var(--color-bg-elevated)",
               }}
             >
-              {/* Gradient glow */}
+              {/* Gradient glow - enhanced for dark mode */}
               <div
                 style={{
                   position: "absolute",
-                  top: "-50%",
-                  right: "-50%",
-                  width: "100%",
-                  height: "100%",
-                  background: `radial-gradient(circle, ${
-                    stat.gradient.includes("#0ea5e9")
-                      ? "rgba(14, 165, 233, 0.1)"
-                      : stat.gradient.includes("#f59e0b")
-                      ? "rgba(245, 158, 11, 0.1)"
-                      : "rgba(16, 185, 129, 0.1)"
-                  } 0%, transparent 70%)`,
+                  top: "-30%",
+                  right: "-30%",
+                  width: "80%",
+                  height: "80%",
+                  background: `radial-gradient(circle, ${glowColor} 0%, transparent 70%)`,
                   pointerEvents: "none",
+                  opacity: isDark ? 0.8 : 0.5,
                 }}
               />
 
@@ -197,13 +201,9 @@ export default function PatientDashboard() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    boxShadow: `0 4px 15px ${
-                      stat.gradient.includes("#0ea5e9")
-                        ? "rgba(14, 165, 233, 0.3)"
-                        : stat.gradient.includes("#f59e0b")
-                        ? "rgba(245, 158, 11, 0.3)"
-                        : "rgba(16, 185, 129, 0.3)"
-                    }`,
+                    boxShadow: isDark
+                      ? `0 4px 20px ${glowColor}, 0 0 0 1px rgba(255,255,255,0.05)`
+                      : `0 4px 15px ${glowColor}`,
                   }}
                 >
                   <Icon size={24} color="white" />

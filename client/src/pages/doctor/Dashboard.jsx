@@ -23,6 +23,15 @@ const StatCard = ({ title, value, icon: Icon, gradient, delay }) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
+  // Extract color for glow effect
+  const glowColor = gradient.includes("#0ea5e9") 
+    ? "rgba(14, 165, 233, 0.15)" 
+    : gradient.includes("#f59e0b") 
+    ? "rgba(245, 158, 11, 0.15)" 
+    : gradient.includes("#8b5cf6")
+    ? "rgba(139, 92, 246, 0.15)"
+    : "rgba(16, 185, 129, 0.15)";
+
   return (
     <div
       className="card"
@@ -31,18 +40,22 @@ const StatCard = ({ title, value, icon: Icon, gradient, delay }) => {
         animation: `fadeIn 0.4s ease-out ${delay}ms both`,
         position: "relative",
         overflow: "hidden",
+        background: isDark 
+          ? `linear-gradient(145deg, rgba(17, 24, 39, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%)`
+          : "var(--color-bg-elevated)",
       }}
     >
-      {/* Gradient glow */}
+      {/* Gradient glow - enhanced for dark mode */}
       <div
         style={{
           position: "absolute",
-          top: "-50%",
-          right: "-50%",
-          width: "100%",
-          height: "100%",
-          background: `radial-gradient(circle, ${gradient}15 0%, transparent 70%)`,
+          top: "-30%",
+          right: "-30%",
+          width: "80%",
+          height: "80%",
+          background: `radial-gradient(circle, ${glowColor} 0%, transparent 70%)`,
           pointerEvents: "none",
+          opacity: isDark ? 0.8 : 0.5,
         }}
       />
 
@@ -64,7 +77,9 @@ const StatCard = ({ title, value, icon: Icon, gradient, delay }) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: `0 4px 15px ${gradient}30`,
+            boxShadow: isDark 
+              ? `0 4px 20px ${glowColor}, 0 0 0 1px rgba(255,255,255,0.05)`
+              : `0 4px 15px ${glowColor}`,
           }}
         >
           <Icon size={24} color="white" />
@@ -77,9 +92,10 @@ const StatCard = ({ title, value, icon: Icon, gradient, delay }) => {
             fontSize: "0.7rem",
             fontWeight: "700",
             color: "#10b981",
-            background: isDark ? "rgba(16, 185, 129, 0.15)" : "#ecfdf5",
+            background: isDark ? "rgba(16, 185, 129, 0.12)" : "#ecfdf5",
             padding: "4px 10px",
             borderRadius: "999px",
+            border: isDark ? "1px solid rgba(16, 185, 129, 0.2)" : "none",
           }}
         >
           <TrendingUp size={11} />

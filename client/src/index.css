@@ -70,42 +70,42 @@
 
 .dark {
   --color-primary: #38bdf8;
-  --color-primary-hover: #0ea5e9;
-  --color-primary-light: rgba(56, 189, 248, 0.15);
-  --color-primary-dark: #7dd3fc;
+  --color-primary-hover: #7dd3fc;
+  --color-primary-light: rgba(56, 189, 248, 0.12);
+  --color-primary-dark: #0ea5e9;
 
   --color-accent: #34d399;
-  --color-accent-light: rgba(52, 211, 153, 0.15);
+  --color-accent-light: rgba(52, 211, 153, 0.12);
 
-  --color-bg: #030712;
-  --color-bg-elevated: #0f172a;
-  --color-bg-subtle: #1e293b;
-  --color-bg-muted: #334155;
+  --color-bg: #0a0f1a;
+  --color-bg-elevated: #111827;
+  --color-bg-subtle: rgba(255, 255, 255, 0.03);
+  --color-bg-muted: #1e293b;
 
-  --color-text: #f1f5f9;
-  --color-text-secondary: #cbd5e1;
-  --color-text-muted: #64748b;
+  --color-text: #f8fafc;
+  --color-text-secondary: #e2e8f0;
+  --color-text-muted: #94a3b8;
   --color-text-inverse: #0f172a;
 
-  --color-border: #1e293b;
-  --color-border-light: #334155;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-light: rgba(255, 255, 255, 0.04);
 
   --sidebar-bg: linear-gradient(180deg, #020617 0%, #0a0f1a 50%, #0f172a 100%);
   --sidebar-hover: rgba(255, 255, 255, 0.04);
   --sidebar-active: rgba(56, 189, 248, 0.12);
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
-  --shadow-glow: 0 0 30px rgba(56, 189, 248, 0.2);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow-card-hover: 0 10px 30px rgba(0, 0, 0, 0.3), 0 4px 10px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.03);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.03);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.03);
+  --shadow-glow: 0 0 30px rgba(56, 189, 248, 0.15), 0 0 0 1px rgba(56, 189, 248, 0.1);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --shadow-card-hover: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08), 0 0 20px rgba(56, 189, 248, 0.08);
 
-  --color-success-bg: rgba(16, 185, 129, 0.15);
-  --color-warning-bg: rgba(245, 158, 11, 0.15);
-  --color-error-bg: rgba(239, 68, 68, 0.15);
-  --color-info-bg: rgba(59, 130, 246, 0.15);
+  --color-success-bg: rgba(16, 185, 129, 0.12);
+  --color-warning-bg: rgba(245, 158, 11, 0.12);
+  --color-error-bg: rgba(239, 68, 68, 0.12);
+  --color-info-bg: rgba(59, 130, 246, 0.12);
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -523,7 +523,7 @@ input, select, textarea {
 .transition-transform { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
 .duration-150 { transition-duration: 150ms; }
 
-/* ══════════════════════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════════════════��═
    HOVER STATES
    ══════════════════════════════════════════════════════════════════════ */
 
@@ -572,6 +572,15 @@ input, select, textarea {
   overflow: hidden;
 }
 
+.dark .card {
+  background: linear-gradient(145deg, rgba(17, 24, 39, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
 .card::before {
   content: "";
   position: absolute;
@@ -590,12 +599,21 @@ input, select, textarea {
   border-color: var(--color-border);
 }
 
+.dark .card:hover {
+  border-color: rgba(56, 189, 248, 0.15);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(56, 189, 248, 0.1),
+    0 0 30px rgba(56, 189, 248, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
 .card:hover::before {
   opacity: 1;
 }
 
 .dark .card::before {
-  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.3), transparent);
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -720,9 +738,18 @@ input, select, textarea {
   box-shadow: 0 2px 10px rgba(14, 165, 233, 0.3);
 }
 
+.dark .btn-primary {
+  background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+  box-shadow: 0 2px 15px rgba(56, 189, 248, 0.25), 0 0 0 1px rgba(56, 189, 248, 0.1);
+}
+
 .btn-primary:hover {
   box-shadow: 0 4px 20px rgba(14, 165, 233, 0.4);
   transform: translateY(-1px);
+}
+
+.dark .btn-primary:hover {
+  box-shadow: 0 6px 30px rgba(56, 189, 248, 0.4), 0 0 0 1px rgba(56, 189, 248, 0.2);
 }
 
 .btn-outline {
