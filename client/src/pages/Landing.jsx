@@ -411,7 +411,7 @@ export default function Landing() {
             }}
           >
             {[
-              { value: "10K+", label: "Active Users" },
+              // { value: "10K+", label: "Active Users" },
               { value: "500+", label: "Healthcare Providers" },
               { value: "99.9%", label: "Uptime" },
             ].map((stat) => (
