@@ -18,7 +18,11 @@ const app = express();
 // ── Middlewares ──────────────────────────────────
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:5173",
+  origin: [
+    "http://localhost:5173",
+    "https://patient-management-system-six-teal.vercel.app",
+    process.env.CLIENT_URL,
+  ].filter(Boolean),
   credentials: true,
 }));
 app.use(morgan("dev"));

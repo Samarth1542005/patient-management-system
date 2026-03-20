@@ -86,10 +86,7 @@ const login = async (req, res) => {
 
     const dbUser = await prisma.user.findUnique({
       where: { id: user.id },
-      include: {
-        doctor: true,
-        patient: true,
-      },
+      include: { doctor: true, patient: true },
     });
 
     return sendSuccess(res, 200, "Login successful.", {
@@ -135,4 +132,72 @@ const resendVerification = async (req, res) => {
   }
 };
 
-module.exports = { signup, login, logout, resendVerification };
+// ── GET ME ────────────────────────────────────────
+const getMe = async (req, res) => {
+  try {
+    const dbUser = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      include: { doctor: true, patient: true },
+    });
+
+    if (!dbUser) return sendError(res, 404, "User not found.");
+
+    return sendSuccess(res, 200, "User fetched successfully.", dbUser);
+  } catch (err) {
+    console.error(err);
+    return sendError(res, 500, "Something went wrong.");
+  }
+};
+// ── COMPLETE PROFILE (Google OAuth users) ─────────
+const completeProfile = async (req, res) => {
+  const { name, role, dob, gender, specialization, qualification, experience } = req.body;
+
+  try {
+    const supabaseUserId = req.user.id;
+    const email = req.user.email;
+
+    // Check if user already exists in DB
+    const existingUser = await prisma.user.findUnique({
+      where: { id: supabaseUserId },
+    });
+
+    if (existingUser) {
+      return sendError(res, 400, "Profile already exists.");
+    }
+
+    const user = await prisma.user.create({
+      data: { id: supabaseUserId, email, role },
+    });
+
+    if (role === "DOCTOR") {
+      await prisma.doctor.create({
+        data: {
+          userId: user.id, name,
+          specialization: specialization || "General",
+          qualification: qualification || "MBBS",
+          experience: parseInt(experience) || 0,
+        },
+      });
+    } else {
+      await prisma.patient.create({
+        data: {
+          userId: user.id, name,
+          dob: new Date(dob) || new Date(),
+          gender: gender || "OTHER",
+        },
+      });
+    }
+
+    const dbUser = await prisma.user.findUnique({
+      where: { id: supabaseUserId },
+      include: { doctor: true, patient: true },
+    });
+
+    return sendSuccess(res, 201, "Profile created successfully.", dbUser);
+  } catch (err) {
+    console.error(err);
+    return sendError(res, 500, "Something went wrong.");
+  }
+};
+
+module.exports = { signup, login, logout, resendVerification, getMe, completeProfile };

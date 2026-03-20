@@ -5,6 +5,8 @@ import useAuthStore from "./store/authStore";
 // Auth pages
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
+import AuthCallback from "./pages/auth/AuthCallback";
+import CompleteProfile from "./pages/auth/CompleteProfile";
 
 // Doctor pages
 import DoctorDashboard from "./pages/doctor/Dashboard";
@@ -39,6 +41,8 @@ export default function App() {
         {/* Landing */}
         <Route path="/" element={<Landing />} />
         {/* Public routes */}
+        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/complete-profile" element={<CompleteProfile />} />
         <Route
           path="/login"
           element={
