@@ -103,7 +103,7 @@ export default function ReportAnalyzer() {
       title="Medical Report Analyzer"
       subtitle="Upload your medical report and get an AI-powered explanation in simple language"
     >
-      <div style={{ maxWidth: "720px" }}>
+      <div style={{ maxWidth: "720px" , margin: "0 auto"}}>
 
         {/* Disclaimer */}
         <div style={{

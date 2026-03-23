@@ -93,7 +93,7 @@ export default function SymptomChecker() {
       title="AI Symptom Checker"
       subtitle="Describe your symptoms and get AI-powered health insights"
     >
-      <div style={{ maxWidth: "800px" }}>
+      <div style={{ maxWidth: "800px" , margin: "0 auto"}}>
 
         {/* Hero Section */}
         <div
