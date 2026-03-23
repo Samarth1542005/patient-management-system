@@ -9,6 +9,7 @@ import {
   Stethoscope,
   ChevronRight,
   Activity,
+  ScanLine,
   Sparkles,
 } from "lucide-react";
 import useAuthStore from "../../store/authStore";
@@ -29,6 +30,7 @@ const patientLinks = [
   { path: "/patient/prescriptions", label: "Prescriptions", icon: FileText },
   { path: "/patient/history", label: "My History", icon: History },
   { path: "/patient/symptom-checker", label: "Symptom Checker", icon: Activity },
+  { path: "/patient/report-analyzer", label: "Report Analyzer", icon: ScanLine },
 ];
 
 export default function Sidebar() {
