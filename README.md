@@ -36,25 +36,29 @@ A production-ready full-stack healthcare management platform built with **React*
 
 ### 🤖 AI-Powered Features
 - **Symptom Checker** — Patients describe symptoms and get AI-powered analysis including possible conditions, severity level, recommended specialist, and general advice (powered by Groq LLaMA)
+- **Medical Report Analyzer** — Patients upload blood tests, X-rays, or any medical report (PDF/image) and get a plain-English explanation including key findings, abnormal values, and doctor recommendations (powered by Groq LLaMA Vision)
+- **PDF Prescription Download** — Patients and doctors can download any prescription as a professionally formatted PDF
 
 ### 👨‍⚕️ Doctor Portal
 - **Dashboard** — Stats overview with NMC verification banner and verified badge
 - **Patient List** — Search, paginate, and view all assigned patients
 - **Patient Detail** — Tabbed view of medical history, vital signs, prescriptions, and appointments
 - **Appointments** — Confirm, complete, or cancel appointments with status filters
-- **Prescriptions** — Create detailed prescriptions with multiple medicines and dosages
+- **Prescriptions** — Create detailed prescriptions with multiple medicines and dosages + PDF download
 - **NMC Verification** — Doctors can verify their profile with their NMC registration number
 
 ### 🧑‍💼 Patient Portal
 - **Dashboard** — Overview of upcoming appointments and recent prescriptions
 - **My Appointments** — Book new appointments, view status, and cancel pending ones
-- **My Prescriptions** — View all prescriptions with medicine details
+- **My Prescriptions** — View all prescriptions with medicine details + PDF download
 - **My History** — View medical conditions and vital sign trends
-- **Symptom Checker** — AI-powered symptom analysis
+- **Symptom Checker** — AI-powered symptom analysis with severity assessment
+- **Report Analyzer** — Upload medical reports and get AI-powered plain-English explanations
 
 ### 🎨 UI/UX
-- Clean, modern design with consistent design system
+- Modern dark/light theme with toggle support
 - Smooth animations and transitions
+- Drag and drop file upload for medical reports
 - Reusable component classes (cards, buttons, forms, modals, badges)
 - Empty states, loading spinners, and error handling throughout
 - Responsive sidebar navigation with role-based menu items
@@ -74,6 +78,8 @@ A production-ready full-stack healthcare management platform built with **React*
 | Tailwind CSS v4 | Utility CSS framework |
 | Vite | Build tool & dev server |
 | Supabase JS | Email verification callback |
+| jsPDF | PDF prescription generation |
+| pdfjs-dist | PDF text extraction for report analyzer |
 
 ### Backend
 | Technology | Purpose |
@@ -83,7 +89,8 @@ A production-ready full-stack healthcare management platform built with **React*
 | Prisma ORM v5 | Database ORM |
 | PostgreSQL | Relational database (Supabase) |
 | Supabase Auth | Authentication & email verification |
-| Groq API (LLaMA) | AI symptom analysis |
+| Groq API (LLaMA) | AI symptom analysis & report analysis |
+| Groq Vision (LLaMA 4) | AI medical image/report analysis |
 | cors | Cross-origin requests |
 | dotenv | Environment config |
 
@@ -93,6 +100,7 @@ A production-ready full-stack healthcare management platform built with **React*
 | Vercel | Frontend hosting |
 | Render | Backend hosting |
 | Supabase | Database + Auth |
+| UptimeRobot | Backend uptime monitoring |
 
 ---
 
@@ -107,7 +115,7 @@ patient-management-system/
 │   │   ├── pages/
 │   │   │   ├── auth/           # Login, Signup, EmailVerificationPending, VerifyEmail
 │   │   │   ├── doctor/         # Dashboard, PatientList, PatientDetail, Appointments, Prescriptions
-│   │   │   └── patient/        # Dashboard, MyAppointments, MyPrescriptions, MyHistory, SymptomChecker
+│   │   │   └── patient/        # Dashboard, MyAppointments, MyPrescriptions, MyHistory, SymptomChecker, ReportAnalyzer
 │   │   ├── store/
 │   │   │   └── authStore.js    # Zustand auth store
 │   │   ├── App.jsx             # Routes & layout
@@ -205,7 +213,7 @@ npm run dev
 | `SUPABASE_URL` | Supabase project URL |
 | `SUPABASE_ANON_KEY` | Supabase anonymous key |
 | `SUPABASE_JWT_SECRET` | Supabase JWT secret |
-| `GROQ_API_KEY` | Groq API key for AI symptom checker |
+| `GROQ_API_KEY` | Groq API key for AI features |
 
 ### Client (`client/.env`)
 
@@ -225,7 +233,9 @@ npm run dev
 | POST | `/api/auth/signup` | Register a new user |
 | POST | `/api/auth/login` | Login & receive JWT |
 | POST | `/api/auth/logout` | Logout |
+| GET | `/api/auth/me` | Get current user profile |
 | POST | `/api/auth/resend-verification` | Resend verification email |
+| POST | `/api/auth/complete-profile` | Complete profile for OAuth users |
 
 ### Doctors
 | Method | Endpoint | Description |
@@ -264,6 +274,7 @@ npm run dev
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/api/ai/symptom-check` | AI-powered symptom analysis |
+| POST | `/api/ai/analyze-report` | AI-powered medical report analysis |
 
 ---
 
