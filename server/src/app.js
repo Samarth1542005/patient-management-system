@@ -10,6 +10,7 @@ const appointmentRoutes = require("./routes/appointments.routes");
 const prescriptionRoutes = require("./routes/prescriptions.routes");
 const doctorRoutes = require("./routes/doctors.routes");
 const aiRoutes = require("./routes/ai.routes");
+const slotSuggestionRoutes = require("./routes/slotSuggestion");
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.use("/api/patients", patientRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/prescriptions", prescriptionRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/appointments", slotSuggestionRoutes);
 
 // ── Global Error Handler ──────────────────────────
 app.use((err, req, res, next) => {
