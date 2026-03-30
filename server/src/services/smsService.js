@@ -1,28 +1,26 @@
-// Twilio SMS Service
-// TODO: Replace placeholders with real Twilio credentials in .env to activate
+const sendSlotSuggestionWhatsApp = async ({ toPhone, patientName, doctorName, suggestedSlots }) => {
+  const isTwilioConfigured =
+    process.env.TWILIO_ACCOUNT_SID !== "placeholder" &&
+    process.env.TWILIO_AUTH_TOKEN !== "placeholder";
 
-const sendSlotSuggestionSMS = async ({ toPhone, patientName, doctorName, suggestedSlots }) => {
-    const isTwilioConfigured =
-      process.env.TWILIO_ACCOUNT_SID !== "placeholder" &&
-      process.env.TWILIO_AUTH_TOKEN !== "placeholder";
-  
-    if (!isTwilioConfigured) {
-      console.log(`[SMS STUB] Would have sent SMS to ${toPhone}`);
-      console.log(`[SMS STUB] Slots: ${suggestedSlots.join(", ")}`);
-      return;
-    }
-  
-    const twilio = require("twilio");
-    const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-  
-    const slotsText = suggestedSlots.join(", ");
-    const body = `Hi ${patientName}, Dr. ${doctorName} is unavailable at your requested time. Available slots: ${slotsText}. Please log in to MediCare to rebook.`;
-  
-    await client.messages.create({
-      body,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: toPhone,
-    });
-  };
-  
-  module.exports = { sendSlotSuggestionSMS };
+  if (!isTwilioConfigured) {
+    console.log(`[WHATSAPP STUB] Would have sent WhatsApp to ${toPhone}`);
+    console.log(`[WHATSAPP STUB] Slots: ${suggestedSlots.join(", ")}`);
+    return;
+  }
+
+  const twilio = require("twilio");
+  const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+  const slotsText = suggestedSlots.map((s, i) => `  ${i + 1}. ${s}`).join("\n");
+
+  const body = `🏥 *MediCare — Appointment Update*\n\nHi ${patientName},\n\n*${doctorName}* is unavailable at your requested time and has suggested the following slots:\n\n${slotsText}\n\nPlease log in to MediCare and book a new appointment at one of the above times.\n\n_— MediCare Team_`;
+
+  await client.messages.create({
+    body,
+    from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
+    to: `whatsapp:${toPhone}`,
+  });
+};
+
+module.exports = { sendSlotSuggestionWhatsApp };

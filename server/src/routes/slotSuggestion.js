@@ -3,7 +3,7 @@ const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
 const verifyToken = require("../middlewares/verifyToken");
 const { sendSlotSuggestionEmail } = require("../services/emailService");
-const { sendSlotSuggestionSMS } = require("../services/smsService");
+const { sendSlotSuggestionWhatsApp } = require("../services/smsService");
 
 const prisma = new PrismaClient();
 
@@ -21,12 +21,8 @@ router.post("/:id/suggest-slots", verifyToken, async (req, res) => {
     const appointment = await prisma.appointment.findUnique({
       where: { id },
       include: {
-        patient: {
-          include: { user: true },
-        },
-        doctor: {
-          include: { user: true },
-        },
+        patient: true,
+        doctor: true,
       },
     });
 
@@ -60,13 +56,18 @@ router.post("/:id/suggest-slots", verifyToken, async (req, res) => {
 
     const patientName = appointment.patient.name;
     const doctorName = appointment.doctor.name;
-    const patientEmail = appointment.patient.user.email;
+    const patientEmail = appointment.patient.user?.email;
     const patientPhone = appointment.patient.phone;
+
+    // Need patient email — fetch user separately
+    const patientUser = await prisma.user.findUnique({
+      where: { id: appointment.patient.userId },
+    });
 
     // Send Email
     try {
       await sendSlotSuggestionEmail({
-        toEmail: patientEmail,
+        toEmail: patientUser.email,
         patientName,
         doctorName,
         suggestedSlots,
@@ -76,17 +77,17 @@ router.post("/:id/suggest-slots", verifyToken, async (req, res) => {
       console.error("Email send failed:", emailErr.message);
     }
 
-    // Send SMS (if phone available)
+    // Send WhatsApp (if phone available)
     if (patientPhone) {
       try {
-        await sendSlotSuggestionSMS({
+        await sendSlotSuggestionWhatsApp({
           toPhone: patientPhone,
           patientName,
           doctorName,
           suggestedSlots,
         });
-      } catch (smsErr) {
-        console.error("SMS send failed:", smsErr.message);
+      } catch (whatsappErr) {
+        console.error("WhatsApp send failed:", whatsappErr.message);
       }
     }
 
