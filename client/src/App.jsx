@@ -20,6 +20,7 @@ import MyPrescriptions from "./pages/patient/MyPrescriptions";
 import MyHistory from "./pages/patient/MyHistory";
 import SymptomChecker from "./pages/patient/SymptomChecker";
 import ReportAnalyzer from "./pages/patient/ReportAnalyzer";
+import Profile from "./pages/patient/Profile";
 
 // Protected route wrapper
 const ProtectedRoute = ({ children, role }) => {
@@ -76,6 +77,7 @@ export default function App() {
         <Route path="/patient/history" element={<ProtectedRoute role="PATIENT"><MyHistory /></ProtectedRoute>} />
         <Route path="/patient/symptom-checker" element={<ProtectedRoute role="PATIENT"><SymptomChecker /></ProtectedRoute>} />
         <Route path="/patient/report-analyzer" element={<ProtectedRoute role="PATIENT"><ReportAnalyzer /></ProtectedRoute>} />
+        <Route path="/patient/profile" element={<ProtectedRoute role="PATIENT"><Profile /></ProtectedRoute>} />
 
         {/* Default redirect */}
         <Route

@@ -6,13 +6,14 @@ const prisma = new PrismaClient();
 // ── GET OWN PROFILE ───────────────────────────────
 const getMyProfile = async (req, res) => {
   try {
-    const patient = await prisma.patient.findUnique({
-      where: { userId: req.user.id },
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      include: { patient: true },
     });
 
-    if (!patient) return sendError(res, 404, "Patient profile not found.");
+    if (!user?.patient) return sendError(res, 404, "Patient profile not found.");
 
-    return sendSuccess(res, 200, "Profile fetched successfully.", patient);
+    return sendSuccess(res, 200, "Profile fetched successfully.", user);
   } catch (err) {
     console.error(err);
     return sendError(res, 500, "Something went wrong.");
@@ -20,16 +21,44 @@ const getMyProfile = async (req, res) => {
 };
 
 // ── UPDATE OWN PROFILE ────────────────────────────
+
 const updateMyProfile = async (req, res) => {
   try {
-    const { name, phone, address, emergencyContact, bloodGroup } = req.body;
+    const { email, phone, address, bloodGroup, emergencyContact } = req.body;
 
-    const patient = await prisma.patient.update({
-      where: { userId: req.user.id },
-      data: { name, phone, address, emergencyContact, bloodGroup },
+    // Check if email is taken by another user
+    if (email) {
+      const existing = await prisma.user.findFirst({
+        where: { email, NOT: { id: req.user.id } },
+      });
+      if (existing) return sendError(res, 409, "This email is already in use.");
+    }
+
+    const updatedUser = await prisma.$transaction(async (tx) => {
+      if (email) {
+        await tx.user.update({
+          where: { id: req.user.id },
+          data: { email },
+        });
+      }
+
+      await tx.patient.update({
+        where: { userId: req.user.id },
+        data: {
+          ...(phone !== undefined && { phone }),
+          ...(address !== undefined && { address }),
+          ...(bloodGroup !== undefined && { bloodGroup: bloodGroup || null }),
+          ...(emergencyContact !== undefined && { emergencyContact }),
+        },
+      });
+
+      return tx.user.findUnique({
+        where: { id: req.user.id },
+        include: { patient: true },
+      });
     });
 
-    return sendSuccess(res, 200, "Profile updated successfully.", patient);
+    return sendSuccess(res, 200, "Profile updated successfully.", updatedUser);
   } catch (err) {
     console.error(err);
     return sendError(res, 500, "Something went wrong.");

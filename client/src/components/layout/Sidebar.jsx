@@ -11,6 +11,7 @@ import {
   Activity,
   ScanLine,
   Sparkles,
+  UserCircle,
 } from "lucide-react";
 import useAuthStore from "../../store/authStore";
 import { logout } from "../../api/auth";
@@ -31,6 +32,7 @@ const patientLinks = [
   { path: "/patient/history", label: "My History", icon: History },
   { path: "/patient/symptom-checker", label: "Symptom Checker", icon: Activity },
   { path: "/patient/report-analyzer", label: "Report Analyzer", icon: ScanLine },
+  { path: "/patient/profile", label: "My Profile", icon: UserCircle },
 ];
 
 export default function Sidebar() {
